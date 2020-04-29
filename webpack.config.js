@@ -6,12 +6,14 @@ function resolve(relatedPath) {
   return path.join(__dirname, relatedPath)
 }
 
+const proxyConfig = {
+  target: 'http://localhost:8000',
+  secure: false,
+  changeOrigin: true,
+}
+
 module.exports = (env) => {
-  const proxyConfig = {
-    target: 'http://localhost:8000',
-    secure: false,
-    changeOrigin: true,
-  }
+
   return {
 
     entry: resolve('./client/index'),
@@ -21,12 +23,16 @@ module.exports = (env) => {
       filename: 'js/[name]-[hash:8].js',
       chunkFilename: 'js/[name].chunk.[chunkhash:4].js',
       // publicPath : 'www.host.com/',
-      //publicPath: 'http://localhost:3000/',
+      // publicPath: 'http://localhost:3000/',
       publicPath: '/',
     },
     resolve: {
       extensions: ['*', '.js', '.jsx'],
-      alias: { Api: resolve('./client/app/api'), Pages: resolve('./client/app/pages') },
+      alias: {
+        Api: resolve('./client/app/api'),
+        Pages: resolve('./client/app/pages'),
+        Styles: resolve('./client/app/styles'),
+      },
     },
     module: {
       rules: [
@@ -71,6 +77,11 @@ module.exports = (env) => {
       contentBase: path.join(__dirname, 'dist'),
       port: 3000,
       open: true,
+      proxy: {
+        '/api/*': proxyConfig,
+        '/media/*': proxyConfig,
+        '/data/*': proxyConfig,
+      },
     },
   }
 }
